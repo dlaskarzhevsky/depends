@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
@@ -111,7 +112,12 @@ namespace Depends
                 .SetMinimumLevel(Verbosity)
                 .AddConsole());
 
+            // Creates dependency graph
             var graph = GetDependencyGraph(loggerFactory);
+
+            string graphRoot = graph.Root.Id;
+            ProjectFilter projectFilter = new ProjectFilter(graph);
+            List<Node> listOfProjectNodes = projectFilter.Filter();
 
             Application.Init();
             Application.QuitKey = Key.Esc;

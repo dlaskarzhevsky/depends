@@ -199,11 +199,10 @@ namespace Depends.Core
 
         private DependencyGraph.Builder CreateBuilder(IProjectAnalyzer  projectAnalyzer, string projectPath, DependencyGraph.Builder builder = null, string framework = null)
         {
-            var analyzeResults = string.IsNullOrEmpty(framework) ?
-                projectAnalyzer.Build() : projectAnalyzer.Build(framework);
+            // Perform design-time without actually building project to get ptoject properties
+            var analyzeResults = string.IsNullOrEmpty(framework) ? projectAnalyzer.Build() : projectAnalyzer.Build(framework);
 
-            var analyzerResult = string.IsNullOrEmpty(framework) ?
-                analyzeResults.FirstOrDefault() : analyzeResults[framework];
+            var analyzerResult = string.IsNullOrEmpty(framework) ? analyzeResults.FirstOrDefault() : analyzeResults[framework];
 
             if (analyzerResult == null)
             {
@@ -213,6 +212,7 @@ namespace Depends.Core
             var projectNode = new ProjectReferenceNode(projectPath);
             if (builder == null)
             {
+                // Create graph root
                 builder = new DependencyGraph.Builder(projectNode);
             }
             else
@@ -221,6 +221,7 @@ namespace Depends.Core
                 builder.WithEdge(new Edge(builder.Root, projectNode));
             }
 
+            // Analyzer saves results to .json file
             var projectAssetsFilePath = analyzerResult.GetProjectAssetsFilePath();
 
             if (!File.Exists(projectAssetsFilePath))
